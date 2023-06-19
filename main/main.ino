@@ -3,18 +3,16 @@
 #include <Servo.h>
 
 //Definición de registros
-uint8_t *R10=(uint8_t*)0X0A;
-uint8_t *R11=(uint8_t*)0X0B;
-uint8_t *R12=(uint8_t*)0X0C;
-//.....
-uint8_t *R15=(uint8_t*)0X0F;
-uint8_t *R16=(uint8_t*)0X10;
-uint8_t *R17=(uint8_t*)0X11;
-uint8_t *R18=(uint8_t*)0X12;
-uint8_t *R19=(uint8_t*)0X13;
-uint8_t *R20=(uint8_t*)0X14;
-uint8_t *R21=(uint8_t*)0X15;
-uint8_t *R22=(uint8_t*)0X16;
+volatile uint8_t *R10=(volatile uint8_t*)0x000A;
+volatile uint8_t *R11=(volatile uint8_t*)0x000B;
+volatile uint8_t *R14=(volatile uint8_t*)0x000E;
+volatile uint8_t *R15=(volatile uint8_t*)0x000F;
+volatile uint8_t *R16=(volatile uint8_t*)0x0010;
+volatile uint8_t *R17=(volatile uint8_t*)0x0011;
+volatile uint8_t *R18=(volatile uint8_t*)0x0012;
+volatile uint8_t *R19=(volatile uint8_t*)0x0013;
+volatile uint8_t *R20=(volatile uint8_t*)0x0014;
+volatile uint8_t *R21=(volatile uint8_t*)0x0015;
 
 //Definición de objetos de bibliotecas
 Servo cabezal;        //Servomotor
@@ -50,36 +48,40 @@ void setup() {
 
 void loop() {
   servo_centro();
+  cabezal.write(*R17);
   avanzar();
   M1.setSpeed(*R19);
   M2.setSpeed(*R20);
-  cabezal.write(*R17);
 
   *R21=medirdistancia();  //Uso de la funcion medir distancia y guardado en R21
-  Serial.println(*R21);
   check_distancia();
-  Serial.println(*R15);
-  if (*R15 == 1) {
+  if (*R16 == 1) {
+    frenar();
+    M1.setSpeed(*R19);
+    M2.setSpeed(*R20);
+    delay(250);
     mirar_dos_lados(cabezal);
     M1.setSpeed(*R19);
     M2.setSpeed(*R20);
-    delay_250();
+    //delay_250();
+    delay(250);
   }
-  delay_1000();
+  delay(1000);
 }
 
 void mirar_dos_lados(Servo cabezal) {
   servo_derecha();
   cabezal.write(*R17);
-  //Serial.println(*R17);
-  delay_500();
+  delay(250);
   *R10 = medirdistancia();
+  delay(500);
   
+
   servo_izquierda();
-  cabezal.write(*R16);
-  //Serial.println(*R17);
-  delay_500();
+  cabezal.write(*R17);
+  delay(250);
   *R11 = medirdistancia();
+  delay(500);
 
   elegir_lado();
 }

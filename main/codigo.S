@@ -1,20 +1,22 @@
-#define __SFR_OFFSET 0
+#define __SFR_OFFSET 0x00
 #include "avr/io.h"
 
 ; Las funciones que se llaman desde el .ino se deben declarar como globales
 ; N° DE REGISTRO - INFORMACION ALMACENADA
 ; 1O               Distancia derecha.
 ; 11               Distancia izquierda.
-; 15               Indica si hay que ejecutar elegir_lado.
+; 15               255 constante.
+; 16               Indica si hay que ejecutar elegir_lado.
 ; 17               Posicion servo.
-; 19		           Motor1
-; 20		           Motor2
-; 21	             Distancia ultrasonico.
-; 22               16 constante.
+; 18               0 constante.
+; 19               Motor1.
+; 20               Motor2.
+; 21               Distancia ultrasonico.
 
 .global setup_asm
 .global girar_derecha
 .global avanzar
+.global frenar
 .global girar_izquierda
 .global check_distancia
 .global servo_derecha 
@@ -28,31 +30,35 @@
 setup_asm:
   cbi DDRC, 0
   sbi DDRC, 1
+  sbi DDRB, 4
+  sbi DDRB, 5
   ldi r17, 90
-  ldi r22, 16
-RET
+  ldi r18, 0
+  ldi r31, 255
+  mov r15, r31
+  RET
 
 servo_derecha:
   ldi r17, 0
-RET
+  RET
 
 servo_izquierda:
   ldi r17, 180
-RET
+  RET
 
 servo_centro:
   ldi r17, 90
-RET
+  RET
 
 check_distancia:
-  clr r15
-  cpi r21, 16
+  clr r16
+  cpi r21, 0x1D
   brlo eludir
   jmp fin_check_dist
 eludir:
-  inc r15
+  inc r16
 fin_check_dist:
-RET
+  RET
 
 elegir_lado:
   cp r10, r11
@@ -62,36 +68,45 @@ elegir_lado:
 izquierda:
   rcall girar_izquierda
 fin_elegir_lado:
+  RET
 
 girar_izquierda:
-  ldi r19, 0
-  ldi r20, 150
-RET
+  mov r19, r15
+  mov r20, r18
+  sbi PORTB, 5
+  cbi PORTB, 4
+  RET
 
 girar_derecha:
-  ldi r19, 150
-  ldi r20, 0
-RET
+  mov r19, r18
+  mov r20, r15
+  cbi PORTB, 5
+  sbi PORTB, 4
+  RET
 
 avanzar:
-  ldi r19, 150
-  ldi r20, 150
-RET
+  mov r19, r15
+  mov r20, r15
+  sbi PORTB, 5
+  sbi PORTB, 4
+  RET
 
 frenar:
-  ldi r19, 0
-  ldi r20, 0
-RET
+  mov r19, r18
+  mov r20, r18
+  cbi PORTB, 5
+  cbi PORTB, 4
+  RET
 
 delay_500:
   rcall delay_250
   rcall delay_250
-RET
+  RET
 
 delay_1000:
   rcall delay_500
   rcall delay_500
-RET
+  RET
 
 ; Assembly code auto-generated
 ; by utility from Bret Mulvey
@@ -108,4 +123,4 @@ L1: dec  r25
     dec  r23
     brne L1
     nop
-RET
+    RET
