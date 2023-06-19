@@ -5,6 +5,7 @@ extern "C"
   void setup_asm(void);
   void girar_derecha(void);
   void girar_izquierda(void);
+  void esquivar(void);
   void avanzar(void);
   void frenar(void);
   void elegir_lado(void);
