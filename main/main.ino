@@ -48,8 +48,6 @@ void setup() {
 }
 
 void loop() {
-  servo_centro();           // Se pone el servo en el centro en el 90° (R17).
-  cabezal.write(*R17);
   avanzar();                // Se setea los registros R19 y R20 para que los motores avanzan.
   M1.setSpeed(*R19);        
   M2.setSpeed(*R20);
@@ -67,7 +65,9 @@ void loop() {
     esquivar();                // Se llama a la función esquivar.
     M1.setSpeed(*R19);         // Esquivar termina seteando valores para los motores.
     M2.setSpeed(*R20);         // Dependiendo de la logica se setean determinado valores.
-    delay_250();
+    servo_centro();           // Se pone el servo en el centro en el 90° (R17).
+    cabezal.write(*R17);
+    delay_500();
   }
 }
 
