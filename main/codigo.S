@@ -44,7 +44,7 @@ setup_asm: ; Funcion que ira en el setup del .ino
 ; Constantes
 ; Se cargan en R31, porque soporta la carga de inmediatos.
 ; Luego se mueven al registro correspondiente.
-  ldi r31, 255 ; Valor para constante de velocidad de motores.
+  ldi r31, 200 ; Valor para constante de velocidad de motores.
   mov r15, r31 ; Se guarda en el R15 el valor 255.
   ldi r31, 0x04 ; Valor constante que será comparado en esquivar. 
   mov r14, r31 ; Se guarda en el R14 el valor 4.
@@ -110,6 +110,8 @@ girar_derecha: ; Funcion que setea las velocidades de los motores para doblar a 
 avanzar: ; Funcion que setea las velocidades de los motores para avanzar.
   mov r19, r15 ; Copia el valor constante de la velocidad a los registros que controlan las velocidades de los motores.
   mov r20, r15
+  ldi r31, 54
+  add r20, r31
   sbi PORTB, 5 ; A modo de debug se prenden los dos leds en la simulacion del simulide.
   sbi PORTB, 4
   RET
